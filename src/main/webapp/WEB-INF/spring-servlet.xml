@@ -1,0 +1,123 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+   http://www.springframework.org/schema/beans     
+   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+   http://www.springframework.org/schema/context 
+   http://www.springframework.org/schema/context/spring-context-3.0.xsd
+   http://www.springframework.org/schema/tx
+   http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+   http://www.springframework.org/schema/mvc
+   http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+	<context:component-scan base-package="com.lanouit.exam" />
+
+	<!-- spring mvc -->
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+
+	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+	<bean
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<!--json转换器 -->
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="mappingJacksonHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="text" />
+					<constructor-arg index="1" value="plain" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="*" />
+					<constructor-arg index="1" value="*" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="text" />
+					<constructor-arg index="1" value="*" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+				<bean class="org.springframework.http.MediaType">
+					<constructor-arg index="0" value="application" />
+					<constructor-arg index="1" value="json" />
+					<constructor-arg index="2" value="UTF-8" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 引入配置文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:jdbc.properties" />
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${username}" />
+		<property name="password" value="${password}" />
+		<!-- 初始化连接大小 -->
+		<property name="initialSize" value="${initialSize}" />
+		<!-- 连接池最大数量 -->
+		<property name="maxActive" value="${maxActive}" />
+	</bean>
+
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:sqlMapConfig.xml" />
+		<!-- 自动扫描mapping.xml文件，**表示迭代查找,也可在sqlMapConfig.xml中单独指定xml文件 -->
+		<property name="mapperLocations" value="classpath:com/lanouit/exam/mapper/**/*.xml" />
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 ,包下的类需要使用@MapperScan注解,否则容器注入会失败 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lanoutit.exam.mapper" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<!-- <property name="suffix" value=".jsp" /> -->
+	</bean>
+
+	<!-- 关于文件上传的 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="104857600" />
+		<property name="maxInMemorySize" value="4096" />
+		<property name="defaultEncoding" value="UTF-8"></property>
+	</bean>
+
+</beans>
