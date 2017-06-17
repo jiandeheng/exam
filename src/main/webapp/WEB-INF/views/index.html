@@ -1,5 +1,716 @@
 <html>
 <body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js" integrity="sha384-tIwI8+qJdZBtYYCKwRkjxBGQVZS3gGozr3CtI+5JF/oL1JmPEHzCEnIKbDbLTCer" crossorigin="anonymous"></script>
 <h2>Hello World!</h2>
+
+<button id="btnPost">POST</button>
+<button id="userLogin">UserLogin</button>
+<button id="userUpdate">UserUpdate</button>
+<form id="updateUserPicForm" enctype="multipart/form-data">
+	<input id="userPicFile" type="file" name="userPicFile"/>
+	<button id="userUpdateUserPic" type="button">userUpdateUserPic</button>
+</form>
+
+<hr>
+<button id="savePosition">savePosition</button>
+<button id="updatePosition">updatePosition</button>
+<button id="deletePosition">deletePosition</button>
+<button id="getPosition">getPosition</button>
+<button id="listPosition">listPosition</button>
+
+<hr>
+<button id="saveSubject">saveSubject</button>
+<button id="updateSubject">updateSubject</button>
+<button id="deleteSubject">deleteSubject</button>
+<button id="getSubject">getSubject</button>
+<button id="listSubject">listSubject</button>
+
+<hr>
+<button id="saveQuestion">saveQuestion</button>
+<button id="updateQuestion">updateQuestion</button>
+<button id="deleteQuestion">deleteQuestion</button>
+<button id="getQuestion">getQuestion</button>
+<button id="listQuestion">listQuestion</button>
+
+<hr>
+<form id="form" enctype="multipart/form-data">
+	<input type="file" name="file" id="file">
+	<button id="batchTest" type="button">batchTest</button>
+</form>
+
+<hr>
+<button id="saveExam">开始考试</button>
+<button id="updateExamDetail">保存作答试题</button>
+<button id="submitExam">提交考试</button>
+<button id="reviewExam">人工评审考试</button>
+<button id="getExam">获取单个考试记录</button>
+<button id="listExam">分页获取考试记录</button>
+
+
+
+<script type="text/javascript">
+
+//分页获取考试记录
+function listExam(){
+	$.ajax({
+		url: "/exam/api/exam/?page=1&pageSize=10",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//获取单个考试记录
+function getExam() {
+	$.ajax({
+		url: "/exam/api/exam/1",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//人工评审考试
+function reviewExam(){
+	var data = {
+		"reviewAnalysis" : "人工综合分析",
+		"examDetails" : [
+			{
+				"id" : 2,
+				"reviewAnalysis" : "试题人工分析2",
+			},
+			{
+				"id" : 3,
+				"reviewAnalysis" : "试题人工分析3",
+			},
+			{
+				"id" : 4,
+				"reviewAnalysis" : "试题人工分析4",
+			},
+			{
+				"id" : 5,
+				"reviewAnalysis" : "试题人工分析5",
+			},
+		],
+	}
+	$.ajax({
+		url: "/exam/api/exam/1/review",
+		dataType: "json",
+		type: "PATCH",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//提交考试
+function submitExam(){
+	var data = {
+		"isReview" : 1,
+		"examDetails" : [
+			{
+				"id" : 4,
+				"answer" : "A",
+			},
+		],
+	}
+	$.ajax({
+		url: "/exam/api/exam/1/submit",
+		dataType: "json",
+		type: "PATCH",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//保存作答试题
+function updateExamDetail(){
+	var data = {
+		"answer" : "B",
+	}
+	$.ajax({
+		url: "/exam/api/exam/examDetail/3",
+		dataType: "json",
+		type: "PATCH",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//开始考试
+function saveExam() {
+	var data = {
+		"examMinute" : 60,
+		"position" : 3,
+	}
+	$.ajax({
+		url: "/exam/api/exam/",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//上传文件测试
+function batchTest() {
+    $("#form").ajaxSubmit({
+    	type: "POST",
+    	url: "/exam/api/question/batchInsertForExcel",
+    	contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+    	success: function(data){
+    		console.log(data);
+    	},
+    });
+}
+
+//用户注册
+function postData(){
+	var data = {
+		"userPassword" : "password",
+		"userMail" : "623225956@qq.com",
+		"userName" : "kenken",
+		"userPosition" : 1,
+		"id" : 100,
+	}
+	$.ajax({
+		url: "/exam/api/user/",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//用户登录
+function userLogin(){
+	var data = {
+		"userAccount" : "623225956@qq.com",
+		"userPassword" : "password",
+	}
+	$.ajax({
+		url: "/exam/api/user/login",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//用户更新
+function userUpdate(){
+	var data = {
+		"userName" : "Mr ken",
+		"userPosition" : 1,
+		"userSex" : 2,
+		"userEducation" : "本科",
+	}
+	$.ajax({
+		url: "/exam/api/user/5",
+		dataType: "json",
+		type: "PUT",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//用户更换头像
+function userUpdateUserPic(){
+	var formData = new FormData($("#updateUserPicForm")[0]);
+	$.ajax({
+	 	url: "/exam/api/user/updateUserPic",
+	 	type: "PATCH",
+	 	data: formData,
+	 	contentType: false, //必须false才会避开jQuery对 formdata 的默认处理 XMLHttpRequest会对 formdata 进行正确的处理 
+	 	processData: false, //必须false才会自动加上正确的Content-Type
+	 	success: function (result) {
+		  	console.log(result);
+	  	}
+	});
+}
+
+
+//添加职业
+function savePosition() {
+	var data = {
+		"positionName" : "JAVA后端工程师",
+		"subjects" : [
+			{
+				id : 1
+			},
+			{
+				id : 2
+			}
+		],
+	}
+	$.ajax({
+		url: "/exam/api/position/",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		},
+		error: function(result){
+			var responseJson = result.responseJSON;
+			console.log(responseJson);
+		}
+	});
+}
+
+//修改职业
+function updatePosition(){
+	var data = {
+		"positionName" : "WEB全栈工程师",
+		"subjects" : [
+			{
+				id : 1
+			},
+			{
+				id : 2
+			}
+		],
+	}
+	$.ajax({
+		url: "/exam/api/position/1",
+		dataType: "json",
+		type: "PUT",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//删除职业
+function deletePosition(){
+	$.ajax({
+		url: "/exam/api/position/1",
+		dataType: "json",
+		type: "DELETE",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//根据主键查询单个职业
+function getPosition(){
+	$.ajax({
+		url: "/exam/api/position/3",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//分页查询职业
+function listPosition(){
+	$.ajax({
+		url: "/exam/api/position/",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+
+//添加科目
+function saveSubject() {
+	var data = {
+		"subjectName" : "java",
+		"positions" : [
+			{
+				id : 3
+			},
+			{
+				id : 4
+			}
+		],
+	}
+	$.ajax({
+		url: "/exam/api/subject/",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		},
+		error: function(result){
+			var responseJson = result.responseJSON;
+			console.log(responseJson);
+		}
+	});
+}
+
+//修改科目
+function updateSubject(){
+	var data = {
+		"subjectName" : "PHP",
+		"positions" : [
+			{
+				id : 3
+			},
+			{
+				id : 5
+			}
+		],
+	}
+	$.ajax({
+		url: "/exam/api/subject/3",
+		dataType: "json",
+		type: "PUT",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//删除科目
+function deleteSubject(){
+	$.ajax({
+		url: "/exam/api/subject/3",
+		dataType: "json",
+		type: "DELETE",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//根据主键查询单个科目
+function getSubject(){
+	$.ajax({
+		url: "/exam/api/subject/3",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//分页查询科目
+function listSubject(){
+	$.ajax({
+		url: "/exam/api/subject/",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//添加试题
+function saveQuestion() {
+	var data = {
+		"type" : 0,
+		"score" : 10,
+		"content" : "Java之父是谁()",
+		"options" : [
+			{
+				"index" : "A",
+				"value" : "拉里·佩奇",
+			},
+			{
+				"index" : "B",
+				"value" : "约翰·德拉浦",
+			},
+			{
+				"index" : "C",
+				"value" : "丹尼斯·里奇",
+			},
+			{
+				"index" : "D",
+				"value" : "詹姆斯·高斯林",
+			}
+		],
+		"answers" : ["D"],
+		"analysis" : "詹姆斯·高斯林出生于加拿大，是一位计算机编程天才。",
+		"subjects": [
+ 			{
+ 				"id" : 1
+ 			},
+ 			{
+ 				"id" : 2
+ 			},
+ 		],
+	}
+	$.ajax({
+		url: "/exam/api/question/",
+		dataType: "json",
+		type: "POST",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		},
+		error: function(result){
+			var responseJson = result.responseJSON;
+			console.log(responseJson);
+		}
+	});
+}
+
+//修改试题
+function updateQuestion(){
+	var data = {
+		"score" : 10,
+		"content" : "Java之父是谁()",
+		"options" : [
+			{
+				"index" : "A",
+				"value" : "拉里·佩奇",
+			},
+			{
+				"index" : "B",
+				"value" : "约翰·德拉浦",
+			},
+			{
+				"index" : "C",
+				"value" : "丹尼斯·里奇",
+			},
+			{
+				"index" : "D",
+				"value" : "詹姆斯·高斯林",
+			}
+		],
+		"answers" : ["D"],
+		"analysis" : "Java之父——詹姆斯·高斯林出生于加拿大，是一位计算机编程天才。是JAVA编程语言的创始人。",
+		"subjects": [
+			{
+				"id" : 1
+			},
+		],
+	}
+	$.ajax({
+		url: "/exam/api/question/2",
+		dataType: "json",
+		type: "PUT",
+		contentType:"application/json; charset=utf-8",
+		data: JSON.stringify(data),
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//删除试题
+function deleteQuestion(){
+	$.ajax({
+		url: "/exam/api/question/2",
+		dataType: "json",
+		type: "DELETE",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//根据主键查询单个试题
+function getQuestion(){
+	$.ajax({
+		url: "/exam/api/question/2",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//分页查询试题
+function listQuestion(){
+	$.ajax({
+		url: "/exam/api/question/",
+		dataType: "json",
+		type: "GET",
+		contentType:"application/json; charset=utf-8",
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+$(function(){
+	
+	//用户注册
+	$("#btnPost").on('click', function(){
+		postData();
+	});
+	
+	//用户登录
+	$("#userLogin").on('click', function(){
+		userLogin();
+	});
+	
+	//用户更新
+	$("#userUpdate").on('click', function(){
+		userUpdate();
+	});
+	
+	//用户更换头像
+	$("#userUpdateUserPic").on('click', function(){
+		userUpdateUserPic();
+	});
+	
+	//添加职位
+	$("#savePosition").on('click', function(){
+		savePosition();
+	});
+	
+	//更新职位
+	$("#updatePosition").on('click', function(){
+		updatePosition();
+	});
+	
+	//删除职位
+	$("#deletePosition").on('click', function(){
+		deletePosition();
+	});
+	
+	//get职位
+	$("#getPosition").on('click', function(){
+		getPosition();
+	});
+	
+	//list职位
+	$("#listPosition").on('click', function(){
+		listPosition();
+	});
+	
+	//添加科目
+	$("#saveSubject").on('click', function(){
+		saveSubject();
+	});
+	
+	//更新科目
+	$("#updateSubject").on('click', function(){
+		updateSubject();
+	});
+	
+	//删除科目
+	$("#deleteSubject").on('click', function(){
+		deleteSubject();
+	});
+	
+	//get科目
+	$("#getSubject").on('click', function(){
+		getSubject();
+	});
+	
+	//list科目
+	$("#listSubject").on('click', function(){
+		listSubject();
+	});
+	
+	//添加试题
+	$("#saveQuestion").on('click', function(){
+		saveQuestion();
+	});
+	
+	//更新试题
+	$("#updateQuestion").on('click', function(){
+		updateQuestion();
+	});
+	
+	//删除试题
+	$("#deleteQuestion").on('click', function(){
+		deleteQuestion();
+	});
+	
+	//get试题
+	$("#getQuestion").on('click', function(){
+		getQuestion();
+	});
+	
+	//list试题
+	$("#listQuestion").on('click', function(){
+		listQuestion();
+	});
+	
+	//文件上传测试
+	$("#batchTest").on('click', function(){
+		batchTest();
+	});
+	
+	//开始考试
+	$("#saveExam").on('click', function(){
+		saveExam();
+	});
+	
+	//保存作答试题
+	$("#updateExamDetail").on('click', function(){
+		updateExamDetail();
+	});
+	
+	//提交考试
+	$("#submitExam").on('click', function(){
+		submitExam();
+	});
+	
+	//人工评审考试
+	$("#reviewExam").on('click', function(){
+		reviewExam();
+	});
+	
+	//获取单个考试记录
+	$("#getExam").on('click', function(){
+		getExam();
+	});
+	
+	//分页获取考试记录
+	$("#listExam").on('click', function(){
+		listExam();
+	});
+	
+});
+
+</script>
 </body>
 </html>

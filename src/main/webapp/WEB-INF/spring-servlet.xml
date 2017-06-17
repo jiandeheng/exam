@@ -94,7 +94,7 @@
 
 	<!-- DAO接口所在包名，Spring会自动查找其下的类 ,包下的类需要使用@MapperScan注解,否则容器注入会失败 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.lanoutit.exam.mapper" />
+		<property name="basePackage" value="com.lanouit.exam.mapper" />
 		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
 	</bean>
 
@@ -119,5 +119,10 @@
 		<property name="maxInMemorySize" value="4096" />
 		<property name="defaultEncoding" value="UTF-8"></property>
 	</bean>
+	
+	<!-- 数据验证 -->
+	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+    </bean>
 
 </beans>

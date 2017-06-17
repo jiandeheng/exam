@@ -1,0 +1,62 @@
+<html>
+<body>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<h2>Hello World!</h2>
+
+<button id="btnPost">Register</button>
+<button id="userLogin">UserLogin</button>
+
+<script type="text/javascript">
+
+//×¢²á
+function postData(){
+	var data = {
+		"userPassword" : "password",
+		"userMail" : "623225956@qq.com",
+	}
+	$.ajax({
+		url: "/exam/api/user",
+		dataType: "json",
+		type: "POST",
+		data: data,
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+//µÇÂ¼
+function userLogin(){
+	var data = {
+		"userAccount" : "623225956@qq.com",
+		"userPassword" : "password",
+	}
+	$.ajax({
+		url: "/exam/api/user/login",
+		dataType: "json",
+		type: "GET",
+		data: data,
+		success: function(result){
+			console.log(result);
+		}
+	});
+}
+
+$(function(){
+	
+	//×¢²á
+	$("#btnPost").on('click', function(){
+		postData();
+	});
+	
+	//ÓÃ»§µÇÂ¼
+	$("#userLogin").on('click', function(){
+		
+	});
+});
+
+
+
+</script>
+</body>
+</html>
